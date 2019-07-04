@@ -1,11 +1,12 @@
 import 'dart:ui';
 
+import 'package:extended_text/src/extended_rich_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../extended_render_paragraph.dart';
-import '../extended_rich_text.dart';
 import '../over_flow_text_span.dart';
 import 'extended_text_selection_overlay.dart';
 import 'extended_text_selection_pointer_handler.dart';

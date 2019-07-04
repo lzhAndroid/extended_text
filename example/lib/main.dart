@@ -1,13 +1,13 @@
 import 'package:example/background_text_demo.dart';
 import 'package:example/common/tu_chong_repository.dart';
-import 'package:example/custom_text_overflow_demo.dart';
 import 'package:example/custom_image_demo.dart';
+import 'package:example/custom_text_overflow_demo.dart';
 import 'package:example/text_demo.dart';
 import 'package:extended_image_library/extended_image_library.dart';
 import 'package:flutter/material.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker_saver/image_picker_saver.dart';
+import 'package:oktoast/oktoast.dart';
 
 import 'text_selection_demo.dart';
 
@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onTap: () {
               switch (page.type) {
                 case PageType.text:
-                  pageWidget = TextDemo();
+                  pageWidget = ReaderPage();
                   break;
                 case PageType.customImage:
                   pageWidget = CustomImageDemo();
