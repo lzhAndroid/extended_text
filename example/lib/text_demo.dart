@@ -2,6 +2,7 @@
 import 'package:extended_text/extended_text.dart';
 import 'package:extended_text/src/extended_rich_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:logging/logging.dart';
 
 class ReaderPage extends StatefulWidget {
@@ -158,7 +159,11 @@ class _ReaderPage extends State<ReaderPage> {
             itemCount: 10,
             controller: _scrollController,
             itemBuilder: (context, index) {
-              logger.info(context.size.height);
+              final RenderObject contextObject = context.findRenderObject();
+//              ReorderableListView
+              final RenderAbstractViewport viewport =
+                  RenderAbstractViewport.of(contextObject);
+              logger.info("$contextObject ${context.size.height}");
               return ExtendedRichText(
                   text: TextSpan(children: [
                     TextSpan(text: '  \u2026  '),
