@@ -7,6 +7,7 @@ import 'package:extended_image_library/extended_image_library.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker_saver/image_picker_saver.dart';
+import 'package:logging/logging.dart';
 import 'package:oktoast/oktoast.dart';
 
 import 'text_selection_demo.dart';
@@ -17,6 +18,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    Logger.root.level = Level.ALL;
+    Logger.root.onRecord.listen((LogRecord rec) {
+      print('${rec.level.name}: ${rec.time}: ${rec.message}');
+    });
     return OKToast(
         child: MaterialApp(
       theme: ThemeData(

@@ -3,8 +3,6 @@ import 'package:extended_text/src/over_flow_text_span.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import 'extended_text_typedef.dart';
-
 ///  * [TextStyle], which discusses how to style text.
 ///  * [TextSpan], which is used to describe the text in a paragraph.
 ///  * [Text], which automatically applies the ambient styles described by a
@@ -31,7 +29,6 @@ class ExtendedRichText extends LeafRenderObjectWidget {
       this.maxLines,
       this.locale,
       this.overFlowTextSpan,
-      this.onSelectionChanged,
       this.selection,
       this.selectionColor})
       : assert(text != null),
@@ -46,8 +43,6 @@ class ExtendedRichText extends LeafRenderObjectWidget {
   final TextSelection selection;
 
   final Color selectionColor;
-
-  final TextSelectionChangedHandler onSelectionChanged;
 
   /// the custom text over flow TextSpan
   final OverFlowTextSpan overFlowTextSpan;
@@ -122,7 +117,6 @@ class ExtendedRichText extends LeafRenderObjectWidget {
             ),
         overFlowTextSpan: overFlowTextSpan,
         selection: selection,
-        onSelectionChanged: onSelectionChanged,
         selectionColor: selectionColor);
   }
 
@@ -141,8 +135,7 @@ class ExtendedRichText extends LeafRenderObjectWidget {
       ..locale = locale ?? Localizations.localeOf(context, nullOk: true)
       ..overFlowTextSpan = overFlowTextSpan
       ..selection = selection
-      ..selectionColor = selectionColor
-      ..onSelectionChanged = onSelectionChanged;
+      ..selectionColor = selectionColor;
   }
 
   @override

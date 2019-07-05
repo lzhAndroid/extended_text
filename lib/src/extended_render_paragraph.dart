@@ -1,13 +1,12 @@
+import 'dart:math';
+import 'dart:ui' as ui show Gradient, Shader, TextBox;
+
 import 'package:extended_text/src/over_flow_text_span.dart';
 import 'package:extended_text_library/extended_text_library.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'dart:ui' as ui show Gradient, Shader, TextBox;
-import 'dart:math';
-
-import 'extended_text_typedef.dart';
 
 /// get idea from https://github.com/bytedance/RealRichText about Inline-Image-In-Text
 /// update by zmtzawqlp@live.com
@@ -45,7 +44,6 @@ class ExtendedRenderParagraph extends RenderBox {
     int maxLines,
     Locale locale,
     OverFlowTextSpan overFlowTextSpan,
-    this.onSelectionChanged,
     Color selectionColor,
     TextSelection selection,
   })  : assert(text != null),
@@ -79,7 +77,6 @@ class ExtendedRenderParagraph extends RenderBox {
   ///TextSelection
 
   /// Called when the selection changes.
-  TextSelectionChangedHandler onSelectionChanged;
 
   double get preferredLineHeight => _textPainter.preferredLineHeight;
 
@@ -893,33 +890,31 @@ class ExtendedRenderParagraph extends RenderBox {
   /// beginning and end of a word respectively.
   ///
   /// {@macro flutter.rendering.editable.select}
-  void selectWordsInRange(
+  List selectWordsInRange(
       {@required Offset from,
       Offset to,
       @required SelectionChangedCause cause}) {
     assert(cause != null);
     assert(from != null);
     _layoutTextWithConstraints(constraints);
-    if (onSelectionChanged != null) {
-      final TextPosition firstPosition =
-          _textPainter.getPositionForOffset(globalToLocal(from));
+    final TextPosition firstPosition =
+        _textPainter.getPositionForOffset(globalToLocal(from));
 
-      final TextSelection firstWord = _selectWordAtOffset(firstPosition);
-      final TextSelection lastWord = to == null
-          ? firstWord
-          : _selectWordAtOffset(
-              _textPainter.getPositionForOffset(globalToLocal(to)));
+    final TextSelection firstWord = _selectWordAtOffset(firstPosition);
+    final TextSelection lastWord = to == null
+        ? firstWord
+        : _selectWordAtOffset(
+            _textPainter.getPositionForOffset(globalToLocal(to)));
 
-      onSelectionChanged(
-        TextSelection(
-          baseOffset: firstWord.base.offset,
-          extentOffset: lastWord.extent.offset,
-          affinity: firstWord.affinity,
-        ),
-        this,
-        cause,
-      );
-    }
+    return [
+      TextSelection(
+        baseOffset: firstWord.base.offset,
+        extentOffset: lastWord.extent.offset,
+        affinity: firstWord.affinity,
+      ),
+      this,
+      cause,
+    ];
   }
 
   TextSelection _selectWordAtOffset(TextPosition position) {
@@ -943,41 +938,39 @@ class ExtendedRenderParagraph extends RenderBox {
   /// Move the selection to the beginning or end of a word.
   ///
   /// {@macro flutter.rendering.editable.select}
-  void selectWordEdge({@required SelectionChangedCause cause}) {
+  List selectWordEdge({@required SelectionChangedCause cause}) {
     assert(cause != null);
     _layoutTextWithConstraints(constraints);
     assert(_lastTapDownPosition != null);
-    if (onSelectionChanged != null) {
-      final TextPosition position = _textPainter
-          .getPositionForOffset(globalToLocal(_lastTapDownPosition));
+    final TextPosition position =
+        _textPainter.getPositionForOffset(globalToLocal(_lastTapDownPosition));
 
-      final TextRange word = _textPainter.getWordBoundary(position);
-      TextSelection selection;
+    final TextRange word = _textPainter.getWordBoundary(position);
+    TextSelection selection;
 
-      ///zmt
-      if (position.offset - word.start <= 1) {
-        selection = handleSpecialText
-            ? convertTextPainterSelectionToTextInputSelection(
-                text,
-                TextSelection.collapsed(
-                    offset: word.start, affinity: TextAffinity.downstream))
-            : TextSelection.collapsed(
-                offset: word.start, affinity: TextAffinity.downstream);
-      } else {
-        selection = handleSpecialText
-            ? convertTextPainterSelectionToTextInputSelection(
-                text,
-                TextSelection.collapsed(
-                    offset: word.end, affinity: TextAffinity.upstream))
-            : TextSelection.collapsed(
-                offset: word.end, affinity: TextAffinity.upstream);
-      }
-      onSelectionChanged(
-        selection,
-        this,
-        cause,
-      );
+    ///zmt
+    if (position.offset - word.start <= 1) {
+      selection = handleSpecialText
+          ? convertTextPainterSelectionToTextInputSelection(
+              text,
+              TextSelection.collapsed(
+                  offset: word.start, affinity: TextAffinity.downstream))
+          : TextSelection.collapsed(
+              offset: word.start, affinity: TextAffinity.downstream);
+    } else {
+      selection = handleSpecialText
+          ? convertTextPainterSelectionToTextInputSelection(
+              text,
+              TextSelection.collapsed(
+                  offset: word.end, affinity: TextAffinity.upstream))
+          : TextSelection.collapsed(
+              offset: word.end, affinity: TextAffinity.upstream);
     }
+    return [
+      selection,
+      this,
+      cause,
+    ];
   }
 
   /// Move selection to the location of the last tap down.
@@ -995,53 +988,52 @@ class ExtendedRenderParagraph extends RenderBox {
   }
 
   /// Select text between the global positions [from] and [to].
-  void selectPositionAt(
+  List selectPositionAt(
       {@required Offset from,
       Offset to,
       @required SelectionChangedCause cause}) {
     assert(cause != null);
     assert(from != null);
     _layoutTextWithConstraints(constraints);
-    if (onSelectionChanged != null) {
-      TextPosition fromPosition =
-          _textPainter.getPositionForOffset(globalToLocal(from));
-      TextPosition toPosition = to == null
-          ? null
-          : _textPainter.getPositionForOffset(globalToLocal(to));
+    TextPosition fromPosition =
+        _textPainter.getPositionForOffset(globalToLocal(from));
+    TextPosition toPosition = to == null
+        ? null
+        : _textPainter.getPositionForOffset(globalToLocal(to));
 
-      //zmt
-      if (handleSpecialText) {
-        fromPosition =
-            convertTextPainterPostionToTextInputPostion(text, fromPosition);
-        toPosition =
-            convertTextPainterPostionToTextInputPostion(text, toPosition);
-      }
-
-      int baseOffset = fromPosition.offset;
-      int extentOffset = fromPosition.offset;
-
-      if (toPosition != null) {
-        baseOffset = min(fromPosition.offset, toPosition.offset);
-        extentOffset = max(fromPosition.offset, toPosition.offset);
-      }
-
-      final TextSelection newSelection = TextSelection(
-        baseOffset: baseOffset,
-        extentOffset: extentOffset,
-        affinity: fromPosition.affinity,
-      );
-      // Call [onSelectionChanged] only when the selection actually changed.
-      if (newSelection != _selection) {
-        onSelectionChanged(newSelection, this, cause);
-      }
+    //zmt
+    if (handleSpecialText) {
+      fromPosition =
+          convertTextPainterPostionToTextInputPostion(text, fromPosition);
+      toPosition =
+          convertTextPainterPostionToTextInputPostion(text, toPosition);
     }
+
+    int baseOffset = fromPosition.offset;
+    int extentOffset = fromPosition.offset;
+
+    if (toPosition != null) {
+      baseOffset = min(fromPosition.offset, toPosition.offset);
+      extentOffset = max(fromPosition.offset, toPosition.offset);
+    }
+
+    final TextSelection newSelection = TextSelection(
+      baseOffset: baseOffset,
+      extentOffset: extentOffset,
+      affinity: fromPosition.affinity,
+    );
+    // Call [onSelectionChanged] only when the selection actually changed.
+    if (newSelection != _selection) {
+      return [newSelection, this, cause];
+    }
+    return null;
   }
 
   /// Select a word around the location of the last tap down.
   ///
   /// {@macro flutter.rendering.editable.select}
-  void selectWord({@required SelectionChangedCause cause}) {
-    selectWordsInRange(from: _lastTapDownPosition, cause: cause);
+  List selectWord({@required SelectionChangedCause cause}) {
+    return selectWordsInRange(from: _lastTapDownPosition, cause: cause);
   }
 
   void _paintSelection(PaintingContext context, Offset effectiveOffset) {
