@@ -203,21 +203,21 @@ class ExtendedTextSelectionState extends State<ExtendedTextSelection>
                 child: Semantics(
                   onCopy: _semanticsOnCopy(_textSelectionControls),
                   child: ExtendedRichText(
-                      textAlign: widget.textAlign,
-                      textDirection: widget
-                          .textDirection, // RichText uses Directionality.of to obtain a default if this is null.
-                      locale: widget
-                          .locale, // RichText uses Localizations.localeOf to obtain a default if this is null
-                      softWrap: widget.softWrap,
-                      overflow: widget.overflow,
-                      textScaleFactor: widget.textScaleFactor,
-                      maxLines: widget.maxLines,
-                      text: widget.text,
-                      overFlowTextSpan: widget.overFlowTextSpan,
-                      key: _renderParagraphKey,
-                      selectionColor: widget.selectionColor,
-                      selection: textEditingValue.selection,
-                      onSelectionChanged: _handleSelectionChanged),
+                    textAlign: widget.textAlign,
+                    textDirection: widget
+                        .textDirection, // RichText uses Directionality.of to obtain a default if this is null.
+                    locale: widget
+                        .locale, // RichText uses Localizations.localeOf to obtain a default if this is null
+                    softWrap: widget.softWrap,
+                    overflow: widget.overflow,
+                    textScaleFactor: widget.textScaleFactor,
+                    maxLines: widget.maxLines,
+                    text: widget.text,
+                    overFlowTextSpan: widget.overFlowTextSpan,
+                    key: _renderParagraphKey,
+                    selectionColor: widget.selectionColor,
+                    selection: textEditingValue.selection,
+                  ),
                 ))));
 
     return result;
@@ -328,8 +328,8 @@ class ExtendedTextSelectionState extends State<ExtendedTextSelection>
         selectionControls: _textSelectionControls);
     final bool longPress = cause == SelectionChangedCause.longPress;
     if (cause != SelectionChangedCause.keyboard &&
-        (widget.text.toPlainText().isNotEmpty || longPress))
-      _selectionOverlay.showHandles();
+        (widget.text.toPlainText().isNotEmpty || longPress)) ;
+    _selectionOverlay.showHandles();
 //      if (widget.onSelectionChanged != null)
 //        widget.onSelectionChanged(selection, cause);
   }
